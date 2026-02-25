@@ -7,7 +7,7 @@ const NewsFeed = () => {
   useEffect(() => {
     const fetchLiveNews = async () => {
       try {
-        // 🚀 Point this to your Render Uploader Bot's URL
+        // 🚀 Fetching from your new Render Uploader Bridge
         const response = await fetch('https://uploader-lingrand.onrender.com/api/news');
         const data = await response.json();
         setArticles(data);
@@ -17,7 +17,7 @@ const NewsFeed = () => {
     };
 
     fetchLiveNews();
-    // Refresh every 5 minutes to check for new news automatically
+    // Auto-refresh every 5 minutes
     const interval = setInterval(fetchLiveNews, 300000);
     return () => clearInterval(interval);
   }, []);
@@ -45,12 +45,10 @@ const NewsFeed = () => {
           {featured && <NewsCard article={featured} variant="featured" />}
         </div>
         <div className="flex flex-col justify-between">
-          <div className="bg-card border border-border rounded-xl p-5 h-full" style={{ boxShadow: "var(--card-shadow)" }}>
+          <div className="bg-card border border-border rounded-xl p-5 h-full">
             <div className="flex items-center gap-2 mb-2 pb-3 border-b border-border">
               <div className="w-1 h-4 bg-primary rounded-full" />
-              <h3 className="font-headline font-semibold text-sm uppercase tracking-widest text-muted-foreground">
-                Top Stories
-              </h3>
+              <h3 className="font-headline font-semibold text-sm uppercase tracking-widest text-muted-foreground">Top Stories</h3>
             </div>
             {rest.slice(0, 3).map((article) => (
               <NewsCard key={article.id} article={article} variant="compact" />
