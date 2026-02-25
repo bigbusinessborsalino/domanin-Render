@@ -41,15 +41,27 @@ const NewsFeed = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
-        <div className="lg:col-span-2">
+        
+        {/* LEFT SIDE: Featured Article + Nested Grid to fill the gap */}
+        <div className="lg:col-span-2 flex flex-col gap-6">
           {featured && <NewsCard article={featured} variant="featured" />}
+          
+          {/* NEW: This grid pulls the 4th and 5th articles directly into the gap! */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {rest.slice(3, 5).map((article) => (
+              <NewsCard key={article.id} article={article} variant="default" />
+            ))}
+          </div>
         </div>
-        <div className="flex flex-col justify-between">
+
+        {/* RIGHT SIDE: Top Stories Sidebar */}
+        <div className="flex flex-col justify-between h-full">
           <div className="bg-card border border-border rounded-xl p-5 h-full">
             <div className="flex items-center gap-2 mb-2 pb-3 border-b border-border">
               <div className="w-1 h-4 bg-primary rounded-full" />
               <h3 className="font-headline font-semibold text-sm uppercase tracking-widest text-muted-foreground">Top Stories</h3>
             </div>
+            {/* The first 3 non-featured articles go here */}
             {rest.slice(0, 3).map((article) => (
               <NewsCard key={article.id} article={article} variant="compact" />
             ))}
@@ -57,8 +69,9 @@ const NewsFeed = () => {
         </div>
       </div>
 
+      {/* BOTTOM FEED: The remaining articles */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {rest.slice(3).map((article) => (
+        {rest.slice(5).map((article) => (
           <NewsCard key={article.id} article={article} variant="default" />
         ))}
       </div>
