@@ -8,7 +8,7 @@ const NewsFeed = () => {
     const fetchLiveNews = async () => {
       try {
         // 🚀 Point this to your Render Uploader Bot's URL
-        const response = await fetch('https://your-render-uploader-name.onrender.com/api/news');
+        const response = await fetch('https://uploader-lingrand.onrender.com/api/news');
         const data = await response.json();
         setArticles(data);
       } catch (err) {
