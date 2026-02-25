@@ -43,7 +43,7 @@ const sections = [
   },
   {
     title: "9. Contact Information",
-    body: "If you have any questions about these Terms, please contact us at legal@grandlinenews.example.com. These Terms were last updated on February 20, 2026.",
+    body: "If you have any questions about these Terms, please contact us at opcnlbnl@gmail.com. These Terms were last updated on February 20, 2026.",
   },
 ];
 
