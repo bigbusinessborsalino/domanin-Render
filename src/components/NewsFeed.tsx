@@ -5,11 +5,21 @@ const NewsFeed = () => {
   const [articles, setArticles] = useState<Article[]>([]);
 
   useEffect(() => {
-    // This tells the UI to look for the file our bot creates
-    fetch("/news.json")
-      .then(res => res.json())
-      .then(data => setArticles(data))
-      .catch(err => console.error("Waiting for bot data...", err));
+    const fetchLiveNews = async () => {
+      try {
+        // 🚀 Point this to your Render Uploader Bot's URL
+        const response = await fetch('https://your-render-uploader-name.onrender.com/api/news');
+        const data = await response.json();
+        setArticles(data);
+      } catch (err) {
+        console.error("Waiting for live bridge data...", err);
+      }
+    };
+
+    fetchLiveNews();
+    // Refresh every 5 minutes to check for new news automatically
+    const interval = setInterval(fetchLiveNews, 300000);
+    return () => clearInterval(interval);
   }, []);
 
   if (articles.length === 0) {
@@ -32,7 +42,7 @@ const NewsFeed = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
         <div className="lg:col-span-2">
-          <NewsCard article={featured} variant="featured" />
+          {featured && <NewsCard article={featured} variant="featured" />}
         </div>
         <div className="flex flex-col justify-between">
           <div className="bg-card border border-border rounded-xl p-5 h-full" style={{ boxShadow: "var(--card-shadow)" }}>
