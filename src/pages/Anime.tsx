@@ -26,7 +26,8 @@ const Anime = ({ theme, onToggleTheme }: AnimeProps) => {
         </div>
         
         {/* For right now, this will load all news. We will add a filter to it next! */}
-        <NewsFeed />
+        {/* We are passing the "anime" category filter to the feed! */}
+        <NewsFeed category="anime" />
       </main>
 
       <Footer />
