@@ -42,53 +42,17 @@ const Footer = () => {
               Topics
             </h4>
             <ul className="space-y-2">
-              {["World", "Technology", "Science", "Culture", "Business"].map((t) => (
-                <li key={t}>
-                  <Link to="/" className="text-sm font-body text-muted-foreground hover:text-primary transition-colors">
-                    {t}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Legal */}
-          <div>
-            <h4 className="font-headline font-semibold text-sm uppercase tracking-widest text-muted-foreground mb-4">
-              Legal
-            </h4>
-            <ul className="space-y-2">
               <li>
-                <Link to="/terms" className="text-sm font-body text-muted-foreground hover:text-primary transition-colors">
-                  Terms & Conditions
+                <Link to="/anime" className="text-sm font-body text-muted-foreground hover:text-primary transition-colors">
+                  Anime News
                 </Link>
               </li>
               <li>
-                <Link to="/disclaimer" className="text-sm font-body text-muted-foreground hover:text-primary transition-colors">
-                  Disclaimer
-                </Link>
-              </li>
-              <li>
-                {/* Fixed Privacy Route */}
-                <Link to="/privacy" className="text-sm font-body text-muted-foreground hover:text-primary transition-colors">
-                  Privacy Policy
+                <Link to="/global" className="text-sm font-body text-muted-foreground hover:text-primary transition-colors">
+                  Global News
                 </Link>
               </li>
             </ul>
           </div>
-        </div>
-
-        <div className="border-t border-border mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-muted-foreground font-body">
-            © {year} Grand Line News. All rights reserved.
-          </p>
-          <p className="text-xs text-muted-foreground font-body text-center">
-            Content compiled & rephrased by AI. For informational purposes only.
-          </p>
-        </div>
-      </div>
-    </footer>
-  );
-};
 
 export default Footer;
