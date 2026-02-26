@@ -77,7 +77,7 @@ const Home = ({ theme, onToggleTheme }: HomeProps) => {
         />
         <div className="absolute inset-0" style={{ background: "var(--hero-overlay)" }} />
 
-        <div className="relative container mx-auto px-4 py-20 flex flex-col items-start justify-end h-full" style={{ minHeight: "420px" }}>
+        <div className="relative w-full max-w-[2000px] mx-auto px-4 sm:px-8 lg:px-12 py-20 flex flex-col items-start justify-end h-full" style={{ minHeight: "420px" }}>
           <div className="animate-fade-up max-w-2xl">
             <div className="flex items-center gap-2 mb-4">
               <span className="bg-primary text-primary-foreground text-xs font-body font-semibold uppercase tracking-widest px-3 py-1.5 rounded-full">
