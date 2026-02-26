@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { TrendingUp, ChevronRight } from "lucide-react";
 import Header from "../components/Header";
@@ -12,6 +13,28 @@ interface HomeProps {
 }
 
 const Home = ({ theme, onToggleTheme }: HomeProps) => {
+  // 1. We create a memory (state) to track which topic is showing and if it is fading
+  const [topicIndex, setTopicIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
+
+  // 2. We create a timer that runs in the background
+  useEffect(() => {
+    if (!trendingTopics || trendingTopics.length === 0) return;
+
+    const timer = setInterval(() => {
+      setIsVisible(false); // Start fading out
+      
+      setTimeout(() => {
+        // Move to the next topic (or go back to 0 if at the end of the line)
+        setTopicIndex((prev) => (prev + 1) % trendingTopics.length);
+        setIsVisible(true); // Fade back in
+      }, 500); // Wait 0.5 seconds for the fade-out to finish
+      
+    }, 3000); // Show each topic for 3 seconds
+
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header theme={theme} onToggleTheme={onToggleTheme} />
@@ -33,6 +56,8 @@ const Home = ({ theme, onToggleTheme }: HomeProps) => {
               </span>
               <TrendingUp className="w-4 h-4 text-primary" />
             </div>
+            
+            {/* The big text appears first */}
             <h1 className="font-headline font-black text-4xl md:text-5xl lg:text-6xl text-white leading-tight mb-4 text-balance">
               Navigate the World's Stories
             </h1>
@@ -40,18 +65,20 @@ const Home = ({ theme, onToggleTheme }: HomeProps) => {
               AI-researched and rephrased news from across the globe, curated for clarity and depth.
             </p>
 
-            {/* Trending Topics */}
-            <div className="flex flex-wrap gap-2">
-              {trendingTopics.map((topic) => (
+            {/* 3. The Animated Fading Ticker */}
+            <div className="h-12 flex items-center">
+              {trendingTopics.length > 0 && (
                 <Link
-                  key={topic}
                   to="/"
-                  className="flex items-center gap-1 text-xs font-body font-medium text-white/80 hover:text-white bg-white/10 hover:bg-white/20 border border-white/20 px-3 py-1.5 rounded-full transition-all duration-200"
+                  className={`flex items-center gap-2 text-sm md:text-base font-body font-medium text-white/90 bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-2 rounded-full transition-opacity duration-500 ${
+                    isVisible ? "opacity-100" : "opacity-0"
+                  }`}
                 >
-                  {topic}
-                  <ChevronRight className="w-3 h-3" />
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                  {trendingTopics[topicIndex]}
+                  <ChevronRight className="w-4 h-4" />
                 </Link>
-              ))}
+              )}
             </div>
           </div>
         </div>
@@ -59,6 +86,7 @@ const Home = ({ theme, onToggleTheme }: HomeProps) => {
 
       {/* News Feed */}
       <main className="flex-1">
+        {/* Note: I kept mockArticles here, but if you want your live database, we will remove this later! */}
         <NewsFeed articles={mockArticles} />
       </main>
 
