@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import NewsCard, { Article } from "./NewsCard";
+import { Loader2 } from "lucide-react";
 
 // NEW: We define a prop so we can tell the feed what category to load
 interface NewsFeedProps {
@@ -38,8 +39,9 @@ const NewsFeed = ({ category }: NewsFeedProps) => {
 
   if (articles.length === 0) {
     return (
-      <div className="text-center py-20 text-muted-foreground font-body">
-        {category ? `📡 Scanning the Grand Line for ${category} News...` : "📡 Scanning the Grand Line for News..."}
+      <div className="flex flex-col items-center justify-center py-32 text-muted-foreground font-body gap-4">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <p>{category ? `Scanning the Grand Line for ${category} News...` : "Loading latest stories..."}</p>
       </div>
     );
   }
