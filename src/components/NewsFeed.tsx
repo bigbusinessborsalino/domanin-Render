@@ -47,7 +47,7 @@ const NewsFeed = ({ category }: NewsFeedProps) => {
   const [featured, ...rest] = articles;
 
   return (
-    <section className="container mx-auto px-4 py-10">
+    <section className="w-full max-w-[2000px] mx-auto px-4 sm:px-8 lg:px-12 py-10">
       <div className="flex items-center gap-4 mb-8">
         <div className="w-1 h-6 bg-primary rounded-full" />
         <h2 className="font-headline font-bold text-2xl text-foreground">
