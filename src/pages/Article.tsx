@@ -1,115 +1,126 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Clock, Calendar, Share2, Bookmark } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-// 🚀 FIXED: Importing correctly from the components folder
-import NewsCard, { Article as ArticleType } from "../components/NewsCard";
+
+interface Article {
+  id: string | number;
+  title: string;
+  summary: string;
+  category: string;
+  date: string;
+  readTime: string;
+  content?: string;
+}
 
 interface ArticleProps {
   theme: "light" | "dark";
   onToggleTheme: () => void;
 }
 
-const Article = ({ theme, onToggleTheme }: ArticleProps) => {
-  const { id } = useParams<{ id: string }>();
-  const [article, setArticle] = useState<any>(null);
-  const [related, setRelated] = useState<ArticleType[]>([]);
+const ArticlePage = ({ theme, onToggleTheme }: ArticleProps) => {
+  const { id } = useParams();
+  const [article, setArticle] = useState<Article | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // For the horizontal LED ticker
+  const [liveTopics, setLiveTopics] = useState<string[]>([]);
 
   useEffect(() => {
-    // 🔗 Fetching from your live Render Uploader Bridge
-    fetch('https://uploader-lingrand.onrender.com/api/news')
-      .then(res => res.json())
-      .then(data => {
-        const found = data.find((a: any) => a.id === id);
-        if (found) {
-          setArticle(found);
-          setRelated(data.filter((a: any) => a.id !== id).slice(0, 3));
-        }
-      })
-      .catch(err => console.error("Error fetching article:", err));
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://uploader-lingrand.onrender.com/api/news');
+        const data = await response.json();
+        
+        // Find the specific article you clicked
+        const foundArticle = data.find((a: any) => a.id === id || a.id === Number(id));
+        if (foundArticle) setArticle(foundArticle);
+        
+        // Setup the ticker data using the top 10 real headlines
+        setLiveTopics(data.slice(0, 10).map((a: any) => a.title));
+      } catch (err) {
+        console.error("Failed to fetch article", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+    window.scrollTo(0, 0); // Always scroll to top when opening an article
   }, [id]);
-
-  if (!article) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col">
-        <Header theme={theme} onToggleTheme={onToggleTheme} />
-        <main className="flex-1 flex items-center justify-center">
-          <div className="text-center py-20 text-muted-foreground font-body">📡 Retrieving Story...</div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  const contentToDisplay = article.full_content || article.excerpt || "Content generating...";
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header theme={theme} onToggleTheme={onToggleTheme} />
-      <main className="flex-1">
-        {article.imageUrl && (
-          <div className="w-full relative overflow-hidden" style={{ maxHeight: "480px" }}>
-            <img
-              src={article.imageUrl}
-              alt={article.title}
-              className="w-full h-full object-cover animate-fade-in"
-              style={{ maxHeight: "480px" }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+
+      {/* CSS for the scrolling LED Marquee Ticker */}
+      <style>{`
+        @keyframes scroll-left {
+          0% { transform: translateX(100vw); }
+          100% { transform: translateX(-100%); }
+        }
+        .animate-marquee {
+          display: inline-block;
+          white-space: nowrap;
+          animation: scroll-left 35s linear infinite;
+        }
+      `}</style>
+
+      {/* The Horizontal Ticker Bar */}
+      {liveTopics.length > 0 && (
+        <div className="bg-primary/10 border-b border-primary/20 py-2 overflow-hidden w-full flex items-center">
+          <div className="animate-marquee flex gap-16 font-body text-sm font-medium text-primary">
+            {liveTopics.map((title, i) => (
+              <span key={i} className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                {title}
+              </span>
+            ))}
           </div>
-        )}
+        </div>
+      )}
 
-        <article className="container mx-auto px-4 py-10 max-w-3xl">
-          <Link to="/" className="inline-flex items-center gap-2 text-sm font-body text-muted-foreground hover:text-primary mb-8">
-            <ArrowLeft className="w-4 h-4" /> Back to News
-          </Link>
+      {/* Main Content (No Images, Just Text!) */}
+      <main className="flex-1 w-full max-w-4xl mx-auto px-4 py-10">
+        <Link to="/" className="inline-flex items-center gap-2 text-sm font-body text-muted-foreground hover:text-primary mb-8 transition-colors">
+          <ArrowLeft className="w-4 h-4" /> Back to News
+        </Link>
 
-          <div className="mb-4">
-            <span className="text-xs font-body font-semibold text-primary uppercase tracking-widest bg-accent px-3 py-1.5 rounded-full">
-              {article.category || "Breaking"}
-            </span>
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-32 text-muted-foreground font-body gap-4">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <p>Retrieving story...</p>
           </div>
-
-          <h1 className="font-headline font-black text-3xl md:text-4xl lg:text-5xl text-foreground leading-tight mb-6">
-            {article.title}
-          </h1>
-
-          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground font-body mb-8 pb-8 border-b border-border">
-            <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4" />{article.date}</span>
-            <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" />{article.readTime || "3 min read"}</span>
-          </div>
-
-          <div className="prose prose-lg max-w-none">
-            {contentToDisplay.split("\n").map((para: string, i: number) => {
-              if (!para.trim()) return null;
-              return (
-                <p key={i} className="font-body text-foreground leading-[1.85] text-[1.0625rem] mb-6 animate-fade-up">
-                  {para}
-                </p>
-              );
-            })}
-          </div>
-        </article>
-
-        {related.length > 0 && (
-          <section className="container mx-auto px-4 pb-16 max-w-5xl">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-1 h-6 bg-primary rounded-full" />
-              <h2 className="font-headline font-bold text-2xl text-foreground">Related Stories</h2>
-              <div className="flex-1 h-px bg-border" />
+        ) : !article ? (
+          <div className="text-center py-20 font-body text-muted-foreground">Article not found.</div>
+        ) : (
+          <article className="animate-fade-up">
+            <div className="flex items-center gap-3 mb-6">
+              <span className="bg-primary/10 text-primary text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full">
+                {article.category || "News"}
+              </span>
+              <span className="text-sm text-muted-foreground font-body">{article.date} • {article.readTime}</span>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {related.map((a) => (
-                <NewsCard key={a.id} article={a} variant="default" />
-              ))}
+
+            <h1 className="font-headline font-black text-4xl md:text-5xl lg:text-6xl text-foreground leading-tight mb-8">
+              {article.title}
+            </h1>
+
+            <div className="prose prose-lg dark:prose-invert max-w-none font-body text-foreground/80 leading-relaxed">
+              {article.content ? (
+                <div dangerouslySetInnerHTML={{ __html: article.content }} />
+              ) : (
+                <p>{article.summary}</p>
+              )}
             </div>
-          </section>
+          </article>
         )}
       </main>
+
       <Footer />
     </div>
   );
 };
 
-export default Article;
+export default ArticlePage;
