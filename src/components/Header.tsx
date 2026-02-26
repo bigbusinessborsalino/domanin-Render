@@ -9,9 +9,9 @@ interface HeaderProps {
 
 const navItems = [
   { label: "Home", to: "/" },
-  { label: "World", to: "/" },
-  { label: "Technology", to: "/" },
-  { label: "Science", to: "/" },
+  { label: "Anime", to: "/anime" },
+  { label: "World", to: "/world" },
+  { label: "Tech", to: "/tech" },
 ];
 
 const Header = ({ theme, onToggleTheme }: HeaderProps) => {
@@ -42,7 +42,7 @@ const Header = ({ theme, onToggleTheme }: HeaderProps) => {
         Breaking: Stay informed with the latest from the Grand Line
       </div>
 
-      <div className="container mx-auto flex items-center justify-between h-16 px-4">
+      <div className="w-full flex items-center justify-between h-16 px-4 sm:px-8 lg:px-12">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 group">
           <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-105">
