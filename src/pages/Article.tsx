@@ -48,7 +48,7 @@ const ArticlePage = ({ theme, onToggleTheme }: any) => {
         .animate-marquee {
           animation: scroll-left 35s linear infinite;
         }
-        /* NEW: Pause the ticker when the user hovers over it to click! */
+        /* Pause the ticker when the user hovers over it to click! */
         .animate-marquee:hover {
           animation-play-state: paused;
         }
@@ -102,4 +102,21 @@ const ArticlePage = ({ theme, onToggleTheme }: any) => {
             <div className="prose prose-lg dark:prose-invert max-w-none font-body text-foreground/80 leading-relaxed">
               {article.full_content ? (
                 article.full_content.split('\n\n').map((paragraph: string, index: number) => (
-                  <p key={index} className="mb-6">{paragraph}</p
+                  <p key={index} className="mb-6">{paragraph}</p>
+                ))
+              ) : article.excerpt ? (
+                <p>{article.excerpt}</p>
+              ) : (
+                <p>No content available for this story.</p>
+              )}
+            </div>
+          </article>
+        )}
+      </main>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default ArticlePage;
