@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { TrendingUp, ChevronRight } from "lucide-react";
+import { TrendingUp, ChevronRight, Loader2 } from "lucide-react"; // NEW: Added Loader2 for the spinning animation
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import NewsFeed from "../components/NewsFeed";
@@ -11,12 +11,19 @@ interface HomeProps {
   onToggleTheme: () => void;
 }
 
+// NEW: We tell the code to expect an object with an ID and a Title
+interface LiveArticle {
+  id: string | number;
+  title: string;
+}
+
 const Home = ({ theme, onToggleTheme }: HomeProps) => {
   const [topicIndex, setTopicIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
   
-  // NEW: State to hold your real, live headlines
-  const [liveTopics, setLiveTopics] = useState<string[]>(["📡 Scanning the Grand Line..."]);
+  // NEW: Save the actual article objects and track if it is loading
+  const [liveTopics, setLiveTopics] = useState<LiveArticle[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // 1. Fetch real news headlines when the page loads
   useEffect(() => {
@@ -25,14 +32,14 @@ const Home = ({ theme, onToggleTheme }: HomeProps) => {
         const response = await fetch('https://uploader-lingrand.onrender.com/api/news');
         const data = await response.json();
         
-        // Extract just the titles from the latest 10 articles
+        // Save the first 10 FULL article objects (so we have their IDs)
         if (data && data.length > 0) {
-          const titles = data.slice(0, 10).map((article: any) => article.title);
-          setLiveTopics(titles);
+          setLiveTopics(data.slice(0, 10));
         }
       } catch (err) {
         console.error("Failed to fetch live headlines", err);
-        setLiveTopics(["Failed to connect to the Grand Line server."]);
+      } finally {
+        setIsLoading(false); // Stop the loading animation once data arrives!
       }
     };
 
@@ -50,9 +57,9 @@ const Home = ({ theme, onToggleTheme }: HomeProps) => {
         // Move to the next topic
         setTopicIndex((prev) => (prev + 1) % liveTopics.length);
         setIsVisible(true); // Fade back in
-      }, 500); // Wait 0.5 seconds for the fade-out to finish
+      }, 500); 
       
-    }, 4000); // CHANGED: Now shows each topic for 4 seconds
+    }, 4000); 
 
     return () => clearInterval(timer);
   }, [liveTopics]);
@@ -86,23 +93,27 @@ const Home = ({ theme, onToggleTheme }: HomeProps) => {
               AI-researched and rephrased news from across the globe, curated for clarity and depth.
             </p>
 
-            {/* The Animated Fading Ticker using LIVE data */}
+            {/* NEW: The Animated Ticker with Loading Spinner and Real Links */}
             <div className="h-12 flex items-center">
-              {liveTopics.length > 0 && (
+              {isLoading ? (
+                <div className="flex items-center gap-2 text-sm md:text-base font-body font-medium text-white/90 bg-white/10 border border-white/20 px-4 py-2 rounded-full">
+                  <Loader2 className="w-4 h-4 animate-spin text-white" />
+                  <span>Loading Latest News...</span>
+                </div>
+              ) : liveTopics.length > 0 ? (
                 <Link
-                  to="/"
+                  to={`/article/${liveTopics[topicIndex].id}`}
                   className={`flex items-center gap-2 text-sm md:text-base font-body font-medium text-white/90 bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-2 rounded-full transition-opacity duration-500 ${
                     isVisible ? "opacity-100" : "opacity-0"
                   }`}
                 >
                   <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                  {/* Truncate super long titles so they fit nicely */}
-                  {liveTopics[topicIndex].length > 60 
-                    ? liveTopics[topicIndex].substring(0, 60) + "..." 
-                    : liveTopics[topicIndex]}
+                  {liveTopics[topicIndex].title.length > 60 
+                    ? liveTopics[topicIndex].title.substring(0, 60) + "..." 
+                    : liveTopics[topicIndex].title}
                   <ChevronRight className="w-4 h-4" />
                 </Link>
-              )}
+              ) : null}
             </div>
           </div>
         </div>
